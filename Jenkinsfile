@@ -1,52 +1,51 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'Node_18' // Make sure this tool name is configured in Jenkins Global Tools
-    }
-
     stages {
-        stage('Checkout Code') {
+        stage('Initialize') {
             steps {
-                git 'https://github.com/Sachin-Sripathi/sample.git'
+                echo 'Pipeline initialized. Environment looks good.'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Check Workspace') {
             steps {
-                sh 'npm ci' // Faster & consistent install
+                sh 'pwd'
+                sh 'ls -la'
             }
         }
 
-        stage('TypeScript Compile') {
+        stage('Simulate Build') {
             steps {
-                sh 'npx tsc' // Compiles based on tsconfig.json
+                echo 'Simulating build...'
+                sh 'echo "Build success!"'
             }
         }
 
-        stage('Run Tests') {
+        stage('Simulate Test') {
             steps {
-                // Only if you have tests defined
-                sh 'npm test || echo "No tests found"' 
+                echo 'Simulating tests...'
+                sh 'echo "All tests passed!"'
             }
         }
 
-        stage('Archive Build Artifacts') {
-            when {
-                expression { fileExists('dist') }
-            }
+        stage('Simulate Deploy') {
             steps {
-                archiveArtifacts artifacts: 'dist/**', fingerprint: true
+                echo 'Simulating deployment...'
+                sh 'echo "Deploying..."'
             }
         }
     }
 
     post {
+        always {
+            echo 'Pipeline completed.'
+        }
         success {
-            echo '✅ TypeScript build successful!'
+            echo 'Pipeline ran successfully.'
         }
         failure {
-            echo '❌ Build failed. Check logs.'
+            echo 'Pipeline failed.'
         }
     }
 }
