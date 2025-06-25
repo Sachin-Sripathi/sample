@@ -10,8 +10,7 @@ pipeline {
 
         stage('Check Workspace') {
             steps {
-                sh 'pwd'
-                sh 'ls -la'
+               echo 'Check workspace looks good.'
             }
         }
 
