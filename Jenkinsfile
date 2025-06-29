@@ -2,18 +2,26 @@ pipeline {
     agent any
 
     tools {
-        nodejs "NodeJS 18"   // Make sure you configured NodeJS in Jenkins global tools
+        // Matches the NodeJS installation named “Node_18” in Global Tool Config
+        nodejs "NodeJS 18"
     }
 
     environment {
         EXPO_CLI_NO_INTERACTIVE = "true"
-        CI = "true"
+        CI                       = "true"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Sachin-Sripathi/sample.git'   // Replace with your GitHub repo if using Git; or use local path if not using Git
+                // Explicitly checkout main branch
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/Sachin-Sripathi/sample.git'
+                    ]]
+                ])
             }
         }
 
@@ -29,10 +37,17 @@ pipeline {
             }
         }
 
-        stage('Serve') {
+        stage('Archive Build Artifacts') {
             steps {
-                bat 'npx serve web-build -l 5000'
+                // Save the web-build folder as build artifacts
+                archiveArtifacts artifacts: 'web-build/**', fingerprint: true
             }
+        }
+    }
+
+    post {
+        always {
+            echo "Finished pipeline on branch ${env.BRANCH_NAME}"
         }
     }
 }
