@@ -2,10 +2,11 @@ pipeline {
     agent any
 
     tools {
-        nodejs "NodeJS 18"  // Ensure this matches Jenkins Global Tool name
+        nodejs "NodeJS 18"
     }
 
     environment {
+        PATH = "${env.PATH};C:\\Users\\sachi\\AppData\\Roaming\\npm"
         EXPO_CLI_NO_INTERACTIVE = "true"
         CI = "true"
     }
@@ -13,20 +14,13 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/main']],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/Sachin-Sripathi/sample.git'
-                    ]]
-                ])
+                checkout scm
             }
         }
 
         stage('Verify Expo CLI') {
             steps {
                 bat '''
-                    set PATH=%PATH%;C:\\Users\\sachi\\AppData\\Roaming\\npm
                     echo PATH: %PATH%
                     dir C:\\Users\\sachi\\AppData\\Roaming\\npm
                     call expo --version
@@ -36,19 +30,13 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat '''
-                    set PATH=%PATH%;C:\\Users\\sachi\\AppData\\Roaming\\npm
-                    npm install
-                '''
+                bat 'call npm install'
             }
         }
 
         stage('Build for Web') {
             steps {
-                bat '''
-                    set PATH=%PATH%;C:\\Users\\sachi\\AppData\\Roaming\\npm
-                    expo export --platform web
-                '''
+                bat 'call expo export --platform web'
             }
         }
 
