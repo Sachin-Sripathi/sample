@@ -2,20 +2,17 @@ pipeline {
     agent any
 
     tools {
-        // Must match the name in Global Tool Config
-        nodejs "NodeJS 18"
+        nodejs "NodeJS 18"  // Ensure this matches Jenkins Global Tool name
     }
 
     environment {
         EXPO_CLI_NO_INTERACTIVE = "true"
         CI = "true"
-        PATH = "${env.PATH};C:\\Users\\sachi\\AppData\\Roaming\\npm"  // Add expo to PATH
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Clone the main branch
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
@@ -28,24 +25,32 @@ pipeline {
 
         stage('Verify Expo CLI') {
             steps {
-                bat 'where expo'
-                bat 'expo --version || npx expo --version'
+                bat '''
+                    set PATH=%PATH%;C:\\Users\\sachi\\AppData\\Roaming\\npm
+                    expo --version
+                '''
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                bat '''
+                    set PATH=%PATH%;C:\\Users\\sachi\\AppData\\Roaming\\npm
+                    npm install
+                '''
             }
         }
 
         stage('Build for Web') {
             steps {
-                bat 'npx expo export --platform web'
+                bat '''
+                    set PATH=%PATH%;C:\\Users\\sachi\\AppData\\Roaming\\npm
+                    expo export --platform web
+                '''
             }
         }
 
-        stage('Archive Build Artifacts') {
+        stage('Archive Build') {
             steps {
                 archiveArtifacts artifacts: '**/web-build/**', fingerprint: true
             }
@@ -54,7 +59,7 @@ pipeline {
 
     post {
         always {
-            echo "Build finished. Status: ${currentBuild.currentResult}"
+            echo "Finished pipeline on branch ${env.BRANCH_NAME}"
         }
     }
 }
