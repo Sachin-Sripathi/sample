@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     tools {
-        nodejs "NodeJS 18"
+        nodejs "NodeJS 18"  // Your NodeJS tool name in Jenkins
     }
 
     environment {
-        PATH = "${env.PATH};C:\\Users\\sachi\\AppData\\Roaming\\npm"
+        PATH = "C:\\Windows\\System32;${env.PATH};C:\\Users\\sachi\\AppData\\Roaming\\npm"
         EXPO_CLI_NO_INTERACTIVE = "true"
         CI = "true"
     }
@@ -15,16 +15,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-            }
-        }
-
-        stage('Verify Expo CLI') {
-            steps {
-                bat '''
-                    echo PATH: %PATH%
-                    dir C:\\Users\\sachi\\AppData\\Roaming\\npm
-                    call expo --version
-                '''
             }
         }
 
