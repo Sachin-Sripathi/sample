@@ -2,19 +2,20 @@ pipeline {
     agent any
 
     tools {
-        // Matches the NodeJS installation named “NodeJS 18” in Global Tool Config
+        // Must match the name in Global Tool Config
         nodejs "NodeJS 18"
     }
 
     environment {
         EXPO_CLI_NO_INTERACTIVE = "true"
         CI = "true"
+        PATH = "${env.PATH};C:\\Users\\sachi\\AppData\\Roaming\\npm"  // Add expo to PATH
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Explicitly checkout main branch
+                // Clone the main branch
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
@@ -22,6 +23,13 @@ pipeline {
                         url: 'https://github.com/Sachin-Sripathi/sample.git'
                     ]]
                 ])
+            }
+        }
+
+        stage('Verify Expo CLI') {
+            steps {
+                bat 'where expo'
+                bat 'expo --version || npx expo --version'
             }
         }
 
@@ -33,27 +41,20 @@ pipeline {
 
         stage('Build for Web') {
             steps {
-                // Force output to web-build/
-                bat 'npx expo export --platform web --output-dir web-build'
+                bat 'npx expo export --platform web'
             }
         }
 
-        stage('List Files') {
+        stage('Archive Build Artifacts') {
             steps {
-                bat 'dir /s'
-            }
-        }
-
-        stage('Archive Build') {
-            steps {
-                archiveArtifacts artifacts: 'web-build/**', fingerprint: true
+                archiveArtifacts artifacts: '**/web-build/**', fingerprint: true
             }
         }
     }
 
     post {
         always {
-            echo "Finished pipeline on branch ${env.BRANCH_NAME}"
+            echo "Build finished. Status: ${currentBuild.currentResult}"
         }
     }
 }
