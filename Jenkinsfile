@@ -37,13 +37,13 @@ pipeline {
             }
         }
 
-        stage('Archive Build Artifacts') {
-            steps {
-                // Save the web-build folder as build artifacts
-                archiveArtifacts artifacts: 'web-build/**', fingerprint: true
-            }
+        stage('Archive Build') {
+    steps {
+        dir('project') {
+            archiveArtifacts artifacts: 'web-build/**', fingerprint: true
         }
     }
+}
 
     post {
         always {
