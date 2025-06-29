@@ -2,26 +2,30 @@ pipeline {
     agent any
 
     tools {
-        // Matches the NodeJS installation named “Node_18” in Global Tool Config
-        nodejs "NodeJS 18"
+        nodejs "NodeJS 18"  // Make sure this exact label is defined in Jenkins -> Global Tool Configuration
     }
 
     environment {
         EXPO_CLI_NO_INTERACTIVE = "true"
-        CI                       = "true"
+        CI = "true"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Explicitly checkout main branch
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: '*/main']],
+                    branches: [[name: '*/main']],  // make sure 'main' branch exists; else use 'master'
                     userRemoteConfigs: [[
                         url: 'https://github.com/Sachin-Sripathi/sample.git'
                     ]]
                 ])
+            }
+        }
+
+        stage('Check Files') {
+            steps {
+                bat 'dir /s'
             }
         }
 
@@ -38,16 +42,15 @@ pipeline {
         }
 
         stage('Archive Build') {
-    steps {
-        dir('project') {
-            archiveArtifacts artifacts: 'web-build/**', fingerprint: true
+            steps {
+                archiveArtifacts artifacts: 'web-build/**', fingerprint: true
+            }
         }
     }
-}
 
     post {
         always {
-            echo "Finished pipeline on branch ${env.BRANCH_NAME}"
+            echo "✅ Finished pipeline on branch ${env.BRANCH_NAME}"
         }
     }
 }
