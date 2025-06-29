@@ -24,14 +24,15 @@ pipeline {
         }
 
         stage('Verify Expo CLI') {
-            steps {
-                bat '''
-                    set PATH=%PATH%;C:\\Users\\sachi\\AppData\\Roaming\\npm
-                    expo --version
-                '''
-            }
-        }
-
+    steps {
+        bat '''
+            set PATH=%PATH%;C:\\Users\\sachi\\AppData\\Roaming\\npm
+            echo %PATH%
+            dir C:\\Users\\sachi\\AppData\\Roaming\\npm
+            expo --version
+        '''
+    }
+}
         stage('Install Dependencies') {
             steps {
                 bat '''
