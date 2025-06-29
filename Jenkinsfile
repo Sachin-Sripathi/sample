@@ -1,47 +1,38 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Initialize') {
-            steps {
-                echo 'Pipeline initialized. Environment looks good.'
-            }
-        }
-
-        stage('Check Workspace') {
-            steps {
-               echo 'Check workspace looks good.'
-            }
-        }
-
-        stage('Simulate Build') {
-            steps {
-                echo 'Simulating build...'
-            }
-        }
-
-        stage('Simulate Test') {
-            steps {
-                echo 'Simulating tests...'
-            }
-        }
-
-        stage('Simulate Deploy') {
-            steps {
-                echo 'Simulating deployment...'
-            }
-        }
+    tools {
+        nodejs "NodeJS 18"   // Make sure you configured NodeJS in Jenkins global tools
     }
 
-    post {
-        always {
-            echo 'Pipeline completed.'
+    environment {
+        EXPO_CLI_NO_INTERACTIVE = "true"
+        CI = "true"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/Sachin-Sripathi/sample.git'   // Replace with your GitHub repo if using Git; or use local path if not using Git
+            }
         }
-        success {
-            echo 'Pipeline ran successfully.'
+
+        stage('Install Dependencies') {
+            steps {
+                bat 'npm install'
+            }
         }
-        failure {
-            echo 'Pipeline failed.'
+
+        stage('Build for Web') {
+            steps {
+                bat 'npx expo export --platform web'
+            }
+        }
+
+        stage('Serve') {
+            steps {
+                bat 'npx serve web-build -l 5000'
+            }
         }
     }
 }
