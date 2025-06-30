@@ -24,15 +24,9 @@ pipeline {
             }
         }
 
-        stage('Build Android APK') {
+        stage('Build Android App via EAS') {
             steps {
-                bat 'call npx expo build:android --non-interactive'
-            }
-        }
-
-        stage('Archive APK') {
-            steps {
-                archiveArtifacts artifacts: '**/*.apk', fingerprint: true
+                bat 'call npx eas build --platform android --non-interactive'
             }
         }
     }
