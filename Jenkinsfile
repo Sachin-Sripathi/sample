@@ -24,13 +24,6 @@ pipeline {
             }
         }
 
-        stage('Build Android App via EAS') {
-            steps {
-                bat 'call npx eas build --platform android --non-interactive'
-            }
-        }
-    }
-
     post {
         always {
             echo "Finished pipeline on branch ${env.BRANCH_NAME}"
