@@ -1,4 +1,4 @@
-pipeline {
+ pipeline {
     agent any
 
     tools {
@@ -24,15 +24,15 @@ pipeline {
             }
         }
 
-        stage('Build for Web') {
+        stage('Build Android APK') {
             steps {
-                bat 'call expo export --platform web'
+                bat 'call npx expo build:android --non-interactive'
             }
         }
 
-        stage('Archive Build') {
+        stage('Archive APK') {
             steps {
-                archiveArtifacts artifacts: '**/web-build/**', fingerprint: true
+                archiveArtifacts artifacts: '**/*.apk', fingerprint: true
             }
         }
     }
