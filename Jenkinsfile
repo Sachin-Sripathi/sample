@@ -1,32 +1,29 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "NodeJS 18"
-    }
-
-    environment {
-        PATH = "C:\\Windows\\System32;${env.PATH};C:\\Users\\sachi\\AppData\\Roaming\\npm"
-        EXPO_CLI_NO_INTERACTIVE = "true"
-        CI = "true"
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Clone') {
             steps {
-                checkout scm
+                git branch: 'main', url: 'https://github.com/Sachin-Sripathi/sample.git'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build') {
             steps {
-                bat 'call npm install'
+                echo 'Building...'
             }
         }
 
-    post {
-        always {
-            echo "Finished pipeline on branch ${env.BRANCH_NAME}"
+        stage('Test') {
+            steps {
+                echo 'Testing...'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying...'
+            }
         }
     }
 }
